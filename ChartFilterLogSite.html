@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Google Charts Example</title>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <script>
+    google.charts.load('current', { packages: ['corechart', 'controls'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      fetch('https://ginoalexander11.github.io/Google-Chart-Git/MomData%20-%20MomData.csv')
+        .then(response => response.text())
+        .then(csvData => {
+          var lines = csvData.split('\n');
+          var data = new google.visualization.DataTable();
+          data.addColumn('date', 'Date');
+
+          // Dynamically add columns for each decile
+          for (var i = 1; i <= 10; i++) {
+            data.addColumn('number', 'Decile ' + i);
+          }
+
+          for (var i = 1; i < lines.length; i++) {
+            var parts = lines[i].split(',');
+            var dateParts = parts[0].split('/');
+            var date = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
+
+            var row = [date];
+            for (var j = 1; j <= 10; j++) {
+              row.push(parseFloat(parts[j]));
+            }
+
+            data.addRow(row);
+          }
+
+          var options = {
+            width: 800,
+            height: 400,
+            title: 'Decile Performance Over Time',
+            hAxis: {
+              format: 'MM/dd/yyyy',
+              slantedText: false,
+              maxAlternation: 1
+            },
+            vAxis: {
+              title: 'Value'
+            }
+          };
+
+          var control = new google.visualization.ControlWrapper({
+            controlType: 'ChartRangeFilter',
+            containerId: 'filter_div',
+            options: {
+              filterColumnLabel: 'Date',
+              ui: {
+                chartOptions: {
+                  hAxis: {
+                    format: 'MM/dd/yyyy'
+                  }
+                }
+              },
+              filterColumnIndex: 0, // Index of the Date column
+              minRangeSize: 24 * 60 * 60 * 1000 * 30, // Minimum range size in milliseconds (30 days)
+              range: { start: new Date(1927, 0, 1), end: new Date(1991, 11, 31) } // Initial date range
+            }
+          });
+
+          var chart = new google.visualization.ChartWrapper({
+            chartType: 'LineChart',
+            containerId: 'chart_div',
+            options: options,
+            dataTable: data
+          });
+
+          var dashboard = new google.visualization.Dashboard(document.getElementById('dashboard'));
+          dashboard.bind(control, chart);
+          dashboard.draw(data);
+
+        });
+    }
+  </script>
+</head>
+<body>
+  <div id="dashboard">
+    <div id="chart_div"></div>
+    <div id="filter_div"></div>
+  </div>
+</body>
+</html>
