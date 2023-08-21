@@ -8,7 +8,7 @@
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
-      fetch('MomDataLog.csv') // Updated CSV file path
+      fetch('MomDataUpdateArithmetic.csv') // Updated CSV file path
         .then(response => response.text())
         .then(csvData => {
           var lines = csvData.split('\n');
