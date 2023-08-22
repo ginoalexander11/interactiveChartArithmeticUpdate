@@ -7,31 +7,8 @@
     google.charts.load('current', { packages: ['corechart', 'controls'] });
     google.charts.setOnLoadCallback(drawChart);
 
-    function normalizeData(dataTable) {
-      var numRows = dataTable.getNumberOfRows();
-      var numCols = dataTable.getNumberOfColumns();
-
-      // Find the maximum value in the entire dataset
-      var maxValue = 0;
-      for (var i = 0; i < numRows; i++) {
-        for (var j = 1; j < numCols; j++) {
-          var value = dataTable.getValue(i, j);
-          maxValue = Math.max(maxValue, value);
-        }
-      }
-
-      // Normalize the data by dividing each value by the maximum value
-      for (var i = 0; i < numRows; i++) {
-        for (var j = 1; j < numCols; j++) {
-          var value = dataTable.getValue(i, j);
-          var normalizedValue = Math.log(1 + value / maxValue * 1000);
-          dataTable.setValue(i, j, normalizedValue);
-        }
-      }
-    }
-
     function drawChart() {
-      fetch('MomDataUpdateArithmetic.csv')
+      fetch('MomDataUpdateArithmetic.csv') // Updated CSV file path
         .then(response => response.text())
         .then(csvData => {
           var lines = csvData.split('\n');
@@ -56,25 +33,17 @@
             data.addRow(row);
           }
 
-          // Normalize the data before drawing
-          normalizeData(data);
-
           var options = {
-            width: 1000,
-            height: 600,
-            title: 'Winners to Losers Portfolios 1927-2023',
+            width: 800,
+            height: 400,
+            title: 'Decile Performance Over Time',
             hAxis: {
               format: 'MM/dd/yyyy',
               slantedText: false,
               maxAlternation: 1
             },
             vAxis: {
-              title: 'Logarithmic Scaled Value',
-              format: 'short' // Use 'short' format for vAxis labels
-            },
-            chartArea: {
-              width: '70%',
-              height: '70%',
+              title: 'Value'
             }
           };
 
@@ -96,6 +65,7 @@
           var dashboard = new google.visualization.Dashboard(document.getElementById('dashboard'));
           dashboard.bind(control, chart);
           dashboard.draw(data);
+
         });
     }
   </script>
