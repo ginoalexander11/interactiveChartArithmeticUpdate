@@ -7,8 +7,13 @@
     google.charts.load('current', { packages: ['corechart', 'controls'] });
     google.charts.setOnLoadCallback(drawChart);
 
+    function parseDate(dateStr) {
+      var dateParts = dateStr.split('/');
+      return new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
+    }
+
     function drawChart() {
-      fetch('MomDataUpdateArithmetic.csv')
+      fetch('MomDataUpdateArithmetic.csv') // Updated CSV file path
         .then(response => response.text())
         .then(csvData => {
           var lines = csvData.split('\n');
@@ -22,8 +27,7 @@
 
           for (var i = 1; i < lines.length; i++) {
             var parts = lines[i].split(',');
-            var dateParts = parts[0].split('/');
-            var date = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
+            var date = parseDate(parts[0]);
 
             var row = [date];
             for (var j = 1; j <= 10; j++) {
@@ -42,13 +46,13 @@
               slantedText: false,
               maxAlternation: 1,
               viewWindow: {
-                min: data.getValue(0, 0),
-                max: data.getValue(data.getNumberOfRows() - 1, 0)
+                min: new Date(1927, 0, 1), // Adjust the start date as needed
+                max: new Date(2023, 11, 31) // Adjust the end date as needed
               }
             },
             vAxis: {
               title: 'Value',
-              viewWindowMode: 'pretty',
+              viewWindowMode: 'pretty'
             }
           };
 
