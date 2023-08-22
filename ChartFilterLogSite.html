@@ -8,7 +8,7 @@
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
-      fetch('MomDataUpdateArithmetic.csv') // Updated CSV file path
+      fetch('MomDataUpdateArithmetic.csv')
         .then(response => response.text())
         .then(csvData => {
           var lines = csvData.split('\n');
@@ -42,16 +42,16 @@
               slantedText: false,
               maxAlternation: 1,
               viewWindow: {
-                min: data.getValue(0, 0), // Use the first date in the data
-                max: data.getValue(data.getNumberOfRows() - 1, 0) // Use the last date in the data
+                min: data.getValue(0, 0),
+                max: data.getValue(data.getNumberOfRows() - 1, 0)
               }
             },
             vAxis: {
               title: 'Value',
               viewWindowMode: 'pretty',
               viewWindow: {
-                min: 0, // Adjust these values as needed
-                max: 2 // Adjust these values as needed
+                min: 0,
+                max: 2
               }
             }
           };
