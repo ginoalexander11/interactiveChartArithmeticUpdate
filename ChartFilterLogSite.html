@@ -24,7 +24,7 @@
       for (var i = 0; i < numRows; i++) {
         for (var j = 1; j < numCols; j++) {
           var value = dataTable.getValue(i, j);
-          var normalizedValue = value / maxValue;
+          var normalizedValue = Math.log(1 + value / maxValue * 1000);
           dataTable.setValue(i, j, normalizedValue);
         }
       }
@@ -69,9 +69,7 @@
               maxAlternation: 1
             },
             vAxis: {
-              title: 'Value (Log Scale)', // Update axis label
-              logScale: true, // Use a logarithmic scale
-              minValue: 0.01, // Set min value to a small positive value
+              title: 'Logarithmic Scaled Value',
             },
             chartArea: {
               width: '70%',
