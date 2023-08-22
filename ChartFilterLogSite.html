@@ -7,33 +7,6 @@
     google.charts.load('current', { packages: ['corechart', 'controls'] });
     google.charts.setOnLoadCallback(drawChart);
 
-    function parseDate(dateString) {
-      var dateParts = dateString.split('/');
-      return new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
-    }
-
-    function normalizeData(data) {
-      var minValue = Number.POSITIVE_INFINITY;
-      var maxValue = Number.NEGATIVE_INFINITY;
-
-      // Find the minimum and maximum values in the data
-      for (var i = 0; i < data.getNumberOfRows(); i++) {
-        for (var j = 1; j <= 10; j++) {
-          var value = data.getValue(i, j);
-          minValue = Math.min(minValue, value);
-          maxValue = Math.max(maxValue, value);
-        }
-      }
-
-      // Normalize the data
-      for (var i = 0; i < data.getNumberOfRows(); i++) {
-        for (var j = 1; j <= 10; j++) {
-          var normalizedValue = (data.getValue(i, j) - minValue) / (maxValue - minValue);
-          data.setValue(i, j, normalizedValue);
-        }
-      }
-    }
-
     function drawChart() {
       fetch('MomDataUpdateArithmetic.csv') // Updated CSV file path
         .then(response => response.text())
@@ -49,37 +22,50 @@
 
           for (var i = 1; i < lines.length; i++) {
             var parts = lines[i].split(',');
-            var date = parseDate(parts[0]);
+            var dateParts = parts[0].split('/');
+            var date = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
 
             var row = [date];
             for (var j = 1; j <= 10; j++) {
-              var value = parseFloat(parts[j]);
-              row.push(value);
+              row.push(parseFloat(parts[j]));
             }
 
             data.addRow(row);
           }
 
-          normalizeData(data);
-
           var options = {
             width: 800,
             height: 400,
-            title: 'Winners to Losers Portfolios 1927-2023',
+            title: 'Decile Performance Over Time',
             hAxis: {
               format: 'MM/dd/yyyy',
               slantedText: false,
               maxAlternation: 1
             },
             vAxis: {
-              title: 'Value',
-              viewWindowMode: 'pretty',
-              minValue: 0,
-              maxValue: 1
+              title: 'Value'
             }
           };
 
-          // ...
+          var chart = new google.visualization.ChartWrapper({
+            chartType: 'LineChart',
+            containerId: 'chart_div',
+            options: options,
+            dataTable: data
+          });
+
+          var control = new google.visualization.ControlWrapper({
+            controlType: 'ChartRangeFilter',
+            containerId: 'filter_div',
+            options: {
+              filterColumnLabel: 'Date'
+            }
+          });
+
+          var dashboard = new google.visualization.Dashboard(document.getElementById('dashboard'));
+          dashboard.bind(control, chart);
+          dashboard.draw(data);
+
         });
     }
   </script>
